@@ -40,13 +40,10 @@ uv run python scripts/fetch_clinvar.py
 **Source URL:**
 - https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/gene_condition_source_id.gz
 
----
-
-## Manual Download Required
-
 ### 3. Orphadata (Orphanet)
 
-**⚠️ Requires accepting terms of use on orphadata.com**
+Orphanet publishes these under **CC-BY 4.0** at a stable path, so no account or
+manual download is needed.
 
 **Files needed (XML products):**
 - `en_product1.xml` - Rare diseases and classifications / Cross-referencing
@@ -54,17 +51,14 @@ uv run python scripts/fetch_clinvar.py
 - `en_product6.xml` - Genes associated with rare diseases
 - `en_product9_prev.xml` - Epidemiological data / Rare disease epidemiology
 
-**Manual steps:**
-1. Go to https://www.orphadata.com/
-2. Create an account and accept the terms of use
-3. Navigate to the download section for "Rare diseases" data
-4. Download the following product files (English versions):
-   - Product 1: Cross-referencing of rare diseases
-   - Product 4: Rare diseases with associated phenotypes
-   - Product 6: Genes associated with rare diseases
-   - Product 9 (prev): Rare disease epidemiology
-5. Extract the ZIP files
-6. Place the XML files in this directory structure:
+**Download script:**
+```bash
+uv run python scripts/fetch_orphadata.py
+```
+
+**Output directory:** `data/orphadata/` (~140 MB)
+
+The script writes into the nested layout `packages/ingest/orphadata.py` expects:
    ```
    data/orphadata/
    ├── "Rare diseases and classifications"/
@@ -111,7 +105,7 @@ Once all data files are in place, run the complete ingestion:
 
 ```bash
 cd apps/api
-uv run python -m ingest.pipeline
+uv run python -m ingest.run
 ```
 
 Or run individual ingest scripts:
@@ -133,14 +127,19 @@ uv run python -m ingest.fgdd
 
 ## Training the XGBoost Model
 
-After ingestion completes and `data/orpha.sqlite` is populated:
+After ingestion completes and `disease_phenotype` is populated:
 
 ```bash
 cd apps/api
-uv run python ../../scripts/train_xgb.py --n-augment 50
+uv run python ../../scripts/train_xgb.py --n-augment 10 --n-estimators 20
 ```
 
 This trains a multi-class XGBoost classifier and saves it to `packages/scoring/xgb_model.pkl`.
+
+Note that XGBoost builds `n_estimators × n_classes` trees. With ~4,300 diseases
+carrying weighted phenotypes, the defaults (200 × 50) mean ~871,000 trees and
+roughly 16 hours; the values above finish in ~25 minutes. Scoring works without
+a trained model — the ranker falls back to the rule-based path.
 
 ---
 
