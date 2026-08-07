@@ -33,6 +33,7 @@ def get_app_engine():
 
 def init_app_db():
     from api import app_models  # noqa: F401
+    from api.qr import models as qr_models  # noqa: F401  — registers QR tables
 
     engine = get_app_engine()
     SQLModel.metadata.create_all(engine)
