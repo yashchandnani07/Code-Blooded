@@ -237,7 +237,9 @@
     "scorecardReview": "Scorecard Review",
     "toggleMenu": "Toggle menu",
     "apiStatus": "API Status",
-    "newBadge": "NEW"
+    "newBadge": "NEW",
+    "myQrCode": "My QR code",
+    "scanPatientCode": "Scan patient code"
   },
   "about": {
     "title": "About {brandName}",

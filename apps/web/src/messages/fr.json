@@ -195,7 +195,9 @@
     "scorecardReview": "Examen du tableau de bord",
     "toggleMenu": "Basculer le menu",
     "apiStatus": "État de l'API",
-    "newBadge": "NOUVEAU"
+    "newBadge": "NOUVEAU",
+    "myQrCode": "Mon code QR",
+    "scanPatientCode": "Scanner le code patient"
   },
   "about": {
     "title": "À propos de {brandName}",
@@ -1509,4 +1511,3 @@
     "emptyDesc": "Les nouvelles preuves des patients apparaîtront ici pour revue médicale."
   }
 }
-

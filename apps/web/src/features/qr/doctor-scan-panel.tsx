@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAuth } from "@clerk/nextjs";
+import { useSearchParams } from "next/navigation";
 import { useApiActor } from "@/lib/use-api-actor";
 import { scanQr, type ScanResult } from "@/features/qr/api";
 
@@ -12,7 +14,7 @@ const OUTCOME_COPY: Record<string, { title: string; body: string; tone: "ok" | "
   },
   consent_pending: {
     title: "Waiting for the patient",
-    body: "A request has been sent. The patient approves it on their device, then scan again.",
+    body: "A request has been sent to their device. This will open automatically the moment they approve.",
     tone: "wait",
   },
   consent_denied: {
@@ -28,11 +30,63 @@ export function DoctorScanPanel({
   onGranted?: (patientOwnerId: string) => void;
 }) {
   const actor = useApiActor();
+  const { getToken } = useAuth();
+  const searchParams = useSearchParams();
   const [code, setCode] = useState("");
   const [purpose, setPurpose] = useState("");
   const [result, setResult] = useState<ScanResult | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Arriving from a scanned code: the QR encodes a link to this page carrying
+  // ?code=, so the doctor lands here with the field already filled.
+  useEffect(() => {
+    const fromQr = searchParams.get("code");
+    if (fromQr) setCode(fromQr);
+  }, [searchParams]);
+
+  // While the patient has not yet decided, re-check automatically so the record
+  // appears the moment they approve — no reloading, no clicking again.
+  useEffect(() => {
+    if (result?.outcome !== "consent_pending" || !actor || actor.role !== "doctor") return;
+    let stop = false;
+    let inFlight = false;
+    const id = setInterval(async () => {
+      if (inFlight) return; // a slow round-trip must not stack up behind itself
+      inFlight = true;
+      try {
+        const auth = await getToken();
+        if (!auth || stop) return;
+        const res = await scanQr(actor, auth, code.trim(), purpose.trim() || undefined);
+        if (stop) return;
+        setResult(res);
+        if (res.outcome === "granted" && res.patient_owner_id) {
+          onGranted?.(res.patient_owner_id);
+        }
+      } catch (err) {
+        // A revoked or expired code will never succeed, so stop waiting and say
+        // so — silently retrying would leave the doctor staring at "waiting"
+        // forever after the patient regenerated their code.
+        const msg = err instanceof Error ? err.message : "";
+        if (/revoked|expired|Unrecognised/i.test(msg)) {
+          if (!stop) {
+            setResult(null);
+            setError(`${msg} Ask the patient for their current code.`);
+          }
+          stop = true;
+          clearInterval(id);
+        }
+        // Anything else is transient: keep waiting rather than dropping the
+        // doctor back to an error state mid-consultation.
+      } finally {
+        inFlight = false;
+      }
+    }, 2000);
+    return () => {
+      stop = true;
+      clearInterval(id);
+    };
+  }, [result?.outcome, actor, getToken, code, purpose, onGranted]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -41,7 +95,9 @@ export function DoctorScanPanel({
     setError(null);
     setResult(null);
     try {
-      const res = await scanQr(actor, code.trim(), purpose.trim() || undefined);
+      const auth = await getToken();
+      if (!auth) throw new Error("Please sign in again");
+      const res = await scanQr(actor, auth, code.trim(), purpose.trim() || undefined);
       setResult(res);
       if (res.outcome === "granted" && res.patient_owner_id) {
         onGranted?.(res.patient_owner_id);
@@ -115,7 +171,15 @@ export function DoctorScanPanel({
 
       {copy && (
         <div className={`mt-4 rounded border px-4 py-3 ${toneClass}`}>
-          <p className="text-[14px]">{copy.title}</p>
+          <p className="flex items-center gap-2 text-[14px]">
+            {copy.title}
+            {result?.outcome === "consent_pending" && (
+              <span
+                aria-hidden
+                className="inline-block h-2 w-2 animate-pulse rounded-full bg-amber-500"
+              />
+            )}
+          </p>
           <p className="mt-1 text-[13px] leading-5">{copy.body}</p>
         </div>
       )}

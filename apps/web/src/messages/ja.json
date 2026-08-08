@@ -195,7 +195,9 @@
     "scorecardReview": "スコアカード確認",
     "toggleMenu": "メニューを切り替え",
     "apiStatus": "APIステータス",
-    "newBadge": "新規"
+    "newBadge": "新規",
+    "myQrCode": "マイQRコード",
+    "scanPatientCode": "患者コードをスキャン"
   },
   "about": {
     "title": "{brandName}について",
@@ -1509,4 +1511,3 @@
     "emptyDesc": "新しい患者エビデンスがここに表示され、医師が確認できます。"
   }
 }
-
