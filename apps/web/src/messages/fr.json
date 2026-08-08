@@ -48,6 +48,13 @@
     "timelineTitle": "Prior cases",
     "loadFailed": "Could not load patient history."
   },
+  "voiceAgent": {
+    "clickToSpeak": "Click to speak",
+    "connecting": "Connecting...",
+    "listening": "Listening...",
+    "speaking": "Speaking...",
+    "error": "Voice connection failed. Try again."
+  },
   "patientNewSubmission": {
     "title": "Soumission du patient",
     "headline": "Envoyez des preuves à votre médecin",
@@ -105,7 +112,9 @@
     "doctorRequestedMoreData": "Le médecin a demandé plus de données",
     "statusInReview": "En cours de revue",
     "loading": "Chargement des soumissions…",
-    "noSubmissionsTitle": "Aucune soumission pour le moment"
+    "noSubmissionsTitle": "Aucune soumission pour le moment",
+    "voiceSectionTitle": "Talk to Lumina",
+    "voiceSectionDesc": "Have a quick voice conversation about how you're feeling. Lumina already knows your doctor-approved history — no need to explain it again."
   },
   "doctorDashboard": {
     "title": "Tableau de bord médecin",

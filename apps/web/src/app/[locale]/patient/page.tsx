@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { DashboardNav } from "@/components/nav";
 import { RoleGuard } from "@/components/lumina/role-guard";
+import { VoiceAgentWidget } from "@/components/lumina/voice-agent-widget";
 import { getPatientSubmissions, getPatientSubmissionsRemote } from "@/lib/api";
 import { useApiActor } from "@/lib/use-api-actor";
 import type { PatientSubmission } from "@/types/lumina";
@@ -85,6 +86,17 @@ export default function PatientDashboardPage() {
                 </div>
               ))}
             </div>
+          </section>
+
+          {/* Voice agent */}
+          <section className="mt-12 rounded border border-[#DDE3ED] bg-white p-6">
+            <p className="text-[12px] font-normal uppercase tracking-[0.08em] text-[#8A94A6]">
+              {t("voiceSectionTitle")}
+            </p>
+            <p className="mt-1.5 max-w-xl text-[14px] leading-6 text-[#4A5568]">
+              {t("voiceSectionDesc")}
+            </p>
+            <VoiceAgentWidget />
           </section>
 
           {/* Submission list */}

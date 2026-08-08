@@ -48,6 +48,13 @@
     "timelineTitle": "Prior cases",
     "loadFailed": "Could not load patient history."
   },
+  "voiceAgent": {
+    "clickToSpeak": "Click to speak",
+    "connecting": "Connecting...",
+    "listening": "Listening...",
+    "speaking": "Speaking...",
+    "error": "Voice connection failed. Try again."
+  },
   "patientNewSubmission": {
     "title": "患者提交",
     "headline": "向您的医生发送证据",
@@ -105,7 +112,9 @@
     "doctorRequestedMoreData": "医生请求了更多数据",
     "statusInReview": "审阅中",
     "loading": "正在加载提交…",
-    "noSubmissionsTitle": "尚无提交"
+    "noSubmissionsTitle": "尚无提交",
+    "voiceSectionTitle": "Talk to Lumina",
+    "voiceSectionDesc": "Have a quick voice conversation about how you're feeling. Lumina already knows your doctor-approved history — no need to explain it again."
   },
   "doctorDashboard": {
     "title": "医生控制面板",

@@ -48,6 +48,13 @@
     "timelineTitle": "Prior cases",
     "loadFailed": "Could not load patient history."
   },
+  "voiceAgent": {
+    "clickToSpeak": "Click to speak",
+    "connecting": "Connecting...",
+    "listening": "Listening...",
+    "speaking": "Speaking...",
+    "error": "Voice connection failed. Try again."
+  },
   "patientNewSubmission": {
     "title": "患者の提出物",
     "headline": "医師にエビデンスを送信",
@@ -105,7 +112,9 @@
     "doctorRequestedMoreData": "医師が追加データを依頼しました",
     "statusInReview": "レビュー中",
     "loading": "提出を読み込み中…",
-    "noSubmissionsTitle": "まだ提出はありません"
+    "noSubmissionsTitle": "まだ提出はありません",
+    "voiceSectionTitle": "Talk to Lumina",
+    "voiceSectionDesc": "Have a quick voice conversation about how you're feeling. Lumina already knows your doctor-approved history — no need to explain it again."
   },
   "doctorDashboard": {
     "title": "医師ダッシュボード",

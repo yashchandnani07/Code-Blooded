@@ -48,6 +48,13 @@
     "timelineTitle": "Prior cases",
     "loadFailed": "Could not load patient history."
   },
+  "voiceAgent": {
+    "clickToSpeak": "Click to speak",
+    "connecting": "Connecting...",
+    "listening": "Listening...",
+    "speaking": "Speaking...",
+    "error": "Voice connection failed. Try again."
+  },
   "patientNewSubmission": {
     "title": "मरीज़ सबमिशन",
     "headline": "अपने डॉक्टर को साक्ष्य भेजें",
@@ -105,7 +112,9 @@
     "doctorRequestedMoreData": "डॉक्टर ने अधिक डेटा मांगा है",
     "statusInReview": "समीक्षा में",
     "loading": "सबमिशन लोड हो रहे हैं…",
-    "noSubmissionsTitle": "अभी तक कोई सबमिशन नहीं"
+    "noSubmissionsTitle": "अभी तक कोई सबमिशन नहीं",
+    "voiceSectionTitle": "Talk to Lumina",
+    "voiceSectionDesc": "Have a quick voice conversation about how you're feeling. Lumina already knows your doctor-approved history — no need to explain it again."
   },
   "doctorDashboard": {
     "title": "डॉक्टर डैशबोर्ड",

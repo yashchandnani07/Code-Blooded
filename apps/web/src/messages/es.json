@@ -48,6 +48,13 @@
     "timelineTitle": "Prior cases",
     "loadFailed": "Could not load patient history."
   },
+  "voiceAgent": {
+    "clickToSpeak": "Click to speak",
+    "connecting": "Connecting...",
+    "listening": "Listening...",
+    "speaking": "Speaking...",
+    "error": "Voice connection failed. Try again."
+  },
   "patientNewSubmission": {
     "title": "Envío del paciente",
     "headline": "Enviar evidencia a su médico",
@@ -105,7 +112,9 @@
     "doctorRequestedMoreData": "El médico solicitó más datos",
     "statusInReview": "En revisión",
     "loading": "Cargando envíos…",
-    "noSubmissionsTitle": "Todavía no hay envíos"
+    "noSubmissionsTitle": "Todavía no hay envíos",
+    "voiceSectionTitle": "Talk to Lumina",
+    "voiceSectionDesc": "Have a quick voice conversation about how you're feeling. Lumina already knows your doctor-approved history — no need to explain it again."
   },
   "doctorDashboard": {
     "title": "Panel del médico",
