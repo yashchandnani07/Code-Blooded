@@ -60,7 +60,7 @@ def _system_prompt(ctx: dict) -> str:
     if ctx.get("sex"):
         who_parts.append(str(ctx["sex"]))
     who = ", ".join(who_parts) or "(no demographic details on file)"
-    return f"""You are Lumina's patient companion, having a live spoken
+    return f"""You are Sanjeevni's patient companion, having a live spoken
 conversation with a patient. Greet them warmly by name if you know it, then
 ask how they are feeling today. Listen, acknowledge their feelings, and
 respond in the context of their doctor-released history below.
