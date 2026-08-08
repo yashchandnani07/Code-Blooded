@@ -23,17 +23,20 @@ def get_engine():
         )
     if url.startswith("postgres://"):
         url = url.replace("postgres://", "postgresql://", 1)
-    return create_engine(
-        url,
-        echo=False,
-        pool_pre_ping=True,
-        connect_args={
+    connect_args = {}
+    if "postgres" in url:
+        connect_args = {
             "connect_timeout": 10,
             "keepalives": 1,
             "keepalives_idle": 30,
             "keepalives_interval": 10,
             "keepalives_count": 3,
-        },
+        }
+    return create_engine(
+        url,
+        echo=False,
+        pool_pre_ping=True,
+        connect_args=connect_args,
     )
 
 

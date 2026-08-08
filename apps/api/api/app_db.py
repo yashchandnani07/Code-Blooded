@@ -16,18 +16,22 @@ def get_app_engine():
     if url.startswith("postgres://"):
         url = url.replace("postgres://", "postgresql://", 1)
 
-    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-    return create_engine(
-        url,
-        echo=False,
-        pool_pre_ping=True,
-        connect_args={
+    connect_args = {}
+    if "postgres" in url:
+        connect_args = {
             "connect_timeout": 10,
             "keepalives": 1,
             "keepalives_idle": 30,
             "keepalives_interval": 10,
             "keepalives_count": 3,
-        },
+        }
+
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    return create_engine(
+        url,
+        echo=False,
+        pool_pre_ping=True,
+        connect_args=connect_args,
     )
 
 
