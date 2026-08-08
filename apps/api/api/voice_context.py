@@ -13,7 +13,7 @@ import json
 
 from sqlmodel import Session, select
 
-from api.app_models import PatientSubmission
+from api.app_models import PatientHistorySummary, PatientSubmission
 
 _MAX_CONTEXT_CHARS = 3_000
 
@@ -34,22 +34,39 @@ def _line_for(submission: PatientSubmission) -> str | None:
             summary = json.loads(submission.patient_summary_json) or {}
         except json.JSONDecodeError:
             summary = {}
-    headline = str(summary.get("headline") or "Doctor guidance").strip()
+
+    headline = str(summary.get("headline") or "").strip()
     body = str(summary.get("recommended_next_step") or summary.get("body") or "").strip()
     safety = str(summary.get("safety_note") or "").strip()
+    patient_notes = str(submission.notes or "").strip()
+    visit_rec = str(submission.visit_recommendation or "").strip()
+
     date = _fmt_date(submission.release_timestamp or submission.updated_at)
-    if not headline and not body:
+
+    if not headline and not body and not patient_notes:
         return None
-    line = f"{date}: {headline}"
+
+    line = f"{date}: {headline or 'Patient visit'}"
     if body:
         line += f" — {body}"
+    elif patient_notes:
+        # No doctor summary body — surface the patient's own symptom description
+        line += f" — symptoms: {patient_notes[:200].replace(chr(10), ' ')}"
+    if visit_rec:
+        line += f" [recommendation: {visit_rec}]"
     if safety:
         line += f" [safety: {safety}]"
     return line
 
 
 def build_patient_voice_context(session: Session, patient_owner_id: str) -> dict:
-    """Return the compact context dict the voice agent's system prompt inlines."""
+    """Return the compact context dict the voice agent's system prompt inlines.
+
+    Priority:
+      1. PatientHistorySummary.summary_markdown — Groq narrative (richest).
+      2. Per-submission bullet lines — fallback when no narrative exists yet.
+    """
+    # ── Demographics + per-submission lines ───────────────────────────────
     rows = session.exec(
         select(PatientSubmission)
         .where(PatientSubmission.patient_owner_id == patient_owner_id)
@@ -76,11 +93,22 @@ def build_patient_voice_context(session: Session, patient_owner_id: str) -> dict
         lines.append(line)
         total += len(line) + 1
 
-    compact = (
-        "\n".join(f"- {line}" for line in lines)
-        if lines
-        else "(No doctor-released history on file yet.)"
-    )
+    # ── Prefer the Groq narrative summary when available ──────────────────
+    narrative = session.exec(
+        select(PatientHistorySummary).where(
+            PatientHistorySummary.patient_owner_id == patient_owner_id
+        )
+    ).first()
+
+    if narrative and narrative.summary_markdown:
+        # Strip markdown headings so it reads as clean spoken prose.
+        prose = narrative.summary_markdown.replace("## ", "").replace("# ", "")
+        compact = prose[:_MAX_CONTEXT_CHARS]
+    elif lines:
+        compact = "\n".join(f"- {line}" for line in lines)
+    else:
+        compact = "(No doctor-released history on file yet.)"
+
     return {
         "patient_name": name,
         "age": age,

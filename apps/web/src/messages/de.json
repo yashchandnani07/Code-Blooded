@@ -204,7 +204,9 @@
     "scorecardReview": "Scorecard-Überprüfung",
     "toggleMenu": "Menü umschalten",
     "apiStatus": "API-Status",
-    "newBadge": "NEU"
+    "newBadge": "NEU",
+    "myQrCode": "Mein QR-Code",
+    "scanPatientCode": "Patientencode scannen"
   },
   "about": {
     "title": "Über {brandName}",
@@ -1527,4 +1529,3 @@
     "emptyDesc": "Neue Patientennachweise erscheinen hier zur ärztlichen Prüfung."
   }
 }
-

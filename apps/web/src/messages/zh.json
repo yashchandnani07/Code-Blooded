@@ -114,7 +114,7 @@
     "loading": "正在加载提交…",
     "noSubmissionsTitle": "尚无提交",
     "voiceSectionTitle": "Talk to Lumina",
-    "voiceSectionDesc": "Have a quick voice conversation about how you're feeling. Lumina already knows your doctor-approved history — no need to explain it again."
+    "voiceSectionDesc": "Have a quick voice conversation about how you're feeling. Sanjeevni already knows your doctor-approved history — no need to explain it again."
   },
   "doctorDashboard": {
     "title": "医生控制面板",
@@ -204,7 +204,9 @@
     "doctorWorkspace": "医生工作空间",
     "scorecardReview": "计分卡审阅",
     "security": "安全",
-    "terms": "服务条款"
+    "terms": "服务条款",
+    "myQrCode": "我的二维码",
+    "scanPatientCode": "扫描患者二维码"
   },
   "about": {
     "title": "关于 {brandName}",
@@ -1518,4 +1520,3 @@
     "emptyDesc": "新的患者证据会显示在这里供医生审阅。"
   }
 }
-

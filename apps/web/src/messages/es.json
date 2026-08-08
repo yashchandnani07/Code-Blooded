@@ -204,7 +204,9 @@
     "doctorWorkspace": "Espacio de trabajo del médico",
     "scorecardReview": "Revisión del cuadro de mando",
     "security": "Seguridad",
-    "terms": "Términos de servicio"
+    "terms": "Términos de servicio",
+    "myQrCode": "Mi código QR",
+    "scanPatientCode": "Escanear código de paciente"
   },
   "about": {
     "title": "Sobre {brandName}",
@@ -1518,4 +1520,3 @@
     "emptyDesc": "La nueva evidencia del paciente aparecerá aquí para revisión médica."
   }
 }
-
