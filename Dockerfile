@@ -19,4 +19,4 @@ RUN uv sync --no-dev
 EXPOSE 7860
 ENV PORT=7860
 
-CMD sh -c "uv run uvicorn main:app --host 0.0.0.0 --port \$PORT"
+CMD bash -c "uv run uvicorn main:app --host 0.0.0.0 --port \$PORT"
