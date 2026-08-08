@@ -6,11 +6,13 @@ controls (PatientHistoryConsent), raising a request if none exists. Every attemp
 is written to the audit log, including the ones that fail.
 """
 
+import json
 import secrets
 import time
 from uuid import uuid4
 
-from api.app_models import PatientHistoryConsent
+from api.app_models import ClinicalCase, PatientHistoryConsent, PatientSubmission
+from api.qr.auth import require_role
 from api.qr.models import PatientQrToken, QrScanAudit
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
@@ -27,19 +29,13 @@ def _now_ms() -> int:
     return int(time.time() * 1000)
 
 
-def _actor(request: Request) -> tuple[str, str]:
-    user_id = request.headers.get("x-lumina-user-id", "").strip()
-    role = request.headers.get("x-lumina-role", "").strip()
-    if not user_id or role not in {"doctor", "patient"}:
-        raise HTTPException(status_code=401, detail="Missing Lumina actor headers")
-    return user_id, role
-
-
 def _require(request: Request, role: str) -> str:
-    user_id, actual = _actor(request)
-    if actual != role:
-        raise HTTPException(status_code=403, detail=f"Only {role}s can perform this action")
-    return user_id
+    """Identity and role proven by the Clerk session, not asserted by a header.
+
+    Record access is the one place the header-trust shortcut used elsewhere in
+    this API is indefensible, so these routes verify.
+    """
+    return require_role(request, role)
 
 
 def _token_payload(row: PatientQrToken) -> dict:
@@ -253,4 +249,87 @@ async def scan_qr(body: ScanBody, request: Request):
         return {
             "outcome": outcome,
             "patient_owner_id": row.patient_owner_id if outcome == "granted" else None,
+        }
+
+
+@router.get("/qr/patients/{patient_id}/record")
+async def patient_record(patient_id: str, request: Request):
+    """The whole card: everything on file for this patient, consent permitting.
+
+    The existing /patients/{id}/history covers only doctor-completed cases, which
+    leaves a patient whose submissions are still in review looking like they have
+    no history at all. This returns the submissions too, so a doctor sees the
+    complete picture rather than the reviewed subset.
+    """
+    doctor_id = _require(request, "doctor")
+
+    with Session(request.app.state.app_db_engine) as session:
+        consent = session.exec(
+            select(PatientHistoryConsent)
+            .where(PatientHistoryConsent.patient_owner_id == patient_id)
+            .where(PatientHistoryConsent.doctor_id == doctor_id)
+            .where(PatientHistoryConsent.status == "approved")
+        ).first()
+        if consent is None:
+            raise HTTPException(status_code=403, detail="Patient has not approved access")
+
+        submissions = session.exec(
+            select(PatientSubmission)
+            .where(PatientSubmission.patient_owner_id == patient_id)
+            .order_by(PatientSubmission.updated_at.desc())
+        ).all()
+
+        cases = session.exec(
+            select(ClinicalCase)
+            .where(ClinicalCase.patient_owner_id == patient_id)
+            .order_by(ClinicalCase.updated_at.desc())
+        ).all()
+
+        # Demographics come from the most recent submission that recorded them.
+        demographics: dict = {}
+        for sub in submissions:
+            if sub.patient_name or sub.age or sub.sex:
+                demographics = {"name": sub.patient_name, "age": sub.age, "sex": sub.sex}
+                break
+
+        diagnoses = []
+        for case in cases:
+            try:
+                payload = json.loads(case.case_json)
+            except (ValueError, TypeError):
+                continue
+            rankings = payload.get("rankings") or []
+            diagnoses.append(
+                {
+                    "case_id": case.id,
+                    "date": case.updated_at,
+                    "doctor_id": case.doctor_owner_id,
+                    "top_diagnosis": rankings[0].get("name") if rankings else None,
+                    "differentials": [r.get("name") for r in rankings[1:4] if r.get("name")],
+                    "visit_recommendation": payload.get("visitRecommendation"),
+                }
+            )
+
+        return {
+            "patient_owner_id": patient_id,
+            "demographics": demographics,
+            "diagnoses": diagnoses,
+            "submissions": [
+                {
+                    "id": s.id,
+                    "date": s.timestamp,
+                    "status": s.status,
+                    "notes": s.notes,
+                    "has_photo": bool(s.photo_file_name),
+                    "has_lab_report": bool(s.lab_file_name),
+                    "lab_file_name": s.lab_file_name,
+                    "genetic_evidence": s.genetic_evidence_json,
+                    "visit_recommendation": s.visit_recommendation,
+                }
+                for s in submissions
+            ],
+            "counts": {
+                "submissions": len(submissions),
+                "diagnoses": len(diagnoses),
+            },
         }

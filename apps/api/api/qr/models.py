@@ -4,7 +4,13 @@ Kept out of api/app_models.py so this feature can land without touching a file
 other work is editing.
 """
 
+from sqlalchemy import BigInteger
 from sqlmodel import Field, SQLModel
+
+# Timestamps are epoch milliseconds, which overflow a 32-bit INTEGER — the column
+# type SQLModel picks for a bare `int`. The existing app tables already use
+# BIGINT; these must match or every insert fails with NumericValueOutOfRange.
+_MS = {"sa_type": BigInteger}
 
 
 class PatientQrToken(SQLModel, table=True):
@@ -20,9 +26,9 @@ class PatientQrToken(SQLModel, table=True):
     id: str = Field(primary_key=True)
     patient_owner_id: str = Field(index=True)
     token: str = Field(index=True, unique=True)
-    created_at: int
-    expires_at: int
-    revoked_at: int | None = None
+    created_at: int = Field(**_MS)
+    expires_at: int = Field(**_MS)
+    revoked_at: int | None = Field(default=None, **_MS)
 
 
 class QrScanAudit(SQLModel, table=True):
@@ -38,7 +44,7 @@ class QrScanAudit(SQLModel, table=True):
     token_id: str | None = Field(default=None, index=True)
     patient_owner_id: str | None = Field(default=None, index=True)
     doctor_id: str = Field(index=True)
-    scanned_at: int
+    scanned_at: int = Field(**_MS)
     # granted | consent_pending | consent_denied | expired | revoked | unknown_token
     outcome: str = Field(index=True)
     purpose: str | None = None
