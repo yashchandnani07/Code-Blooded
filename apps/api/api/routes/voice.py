@@ -40,7 +40,8 @@ _SAFETY_RULES = """SAFETY RULES (never break these):
   technical details.
 - Keep replies short (1-3 sentences). This is a spoken conversation, not
   a written report.
-- Match the patient's language. If they switch, you switch."""
+- Match the patient's language. If they switch, you switch.
+- In sense of emergency, reply in short sentences"""
 
 
 def _actor(request: Request) -> tuple[str, str]:
