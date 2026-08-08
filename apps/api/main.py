@@ -24,6 +24,7 @@ from api.routes.patient_history import router as patient_history_router  # noqa:
 from api.routes.score import router as score_router  # noqa: E402
 from api.routes.search import router as search_router  # noqa: E402
 from api.routes.submissions import router as submissions_router  # noqa: E402
+from api.routes.voice import router as voice_router  # noqa: E402
 
 
 def _hpo_synonyms() -> dict[str, list[str]]:
@@ -160,6 +161,7 @@ app.include_router(fhir_router)
 app.include_router(search_router)
 app.include_router(submissions_router)
 app.include_router(patient_history_router)
+app.include_router(voice_router)
 
 
 @app.get("/health")
