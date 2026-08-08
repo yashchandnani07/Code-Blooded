@@ -170,3 +170,13 @@ export interface PatientHistoryResponse {
   summary: string;
   timeline: PatientHistoryTimelineEntry[];
 }
+
+export interface VoiceSession {
+  token: string;
+  model: string;
+  expiresAt: number;
+  sessionExpiresAt: number;
+  systemPrompt: string;
+  voiceName: string;
+  languageCode: string;
+}

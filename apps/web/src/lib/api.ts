@@ -1,4 +1,4 @@
-import type { CaseData, CaseOutcome, CaseSummary, ConsentRequest, GeneticEvidence, HPOTerm, PatientContext, PatientHistoryResponse, PatientSubmission, PatientSummary, RankResult, VisitRecommendation } from "@/types/lumina";
+import type { CaseData, CaseOutcome, CaseSummary, ConsentRequest, GeneticEvidence, HPOTerm, PatientContext, PatientHistoryResponse, PatientSubmission, PatientSummary, RankResult, VisitRecommendation, VoiceSession } from "@/types/lumina";
 
 const API = "/api";
 type StoredCaseSummary = CaseSummary & { status: CaseOutcome };
@@ -170,6 +170,28 @@ export async function denyConsentRequestRemote(id: string, actor: ApiActor): Pro
 export async function getPatientHistoryRemote(patientId: string, actor: ApiActor): Promise<PatientHistoryResponse> {
   const res = await fetch(`${API}/patients/${patientId}/history`, { headers: actorHeaders(actor), cache: "no-store" });
   return jsonOrThrow<PatientHistoryResponse>(res, "Could not load patient history");
+}
+
+export async function createVoiceSessionRemote(actor: ApiActor): Promise<VoiceSession> {
+  const res = await fetch(`${API}/voice/session`, { method: "POST", headers: actorHeaders(actor) });
+  const raw = await jsonOrThrow<{
+    token: string;
+    model: string;
+    expires_at: number;
+    session_expires_at: number;
+    system_prompt: string;
+    voice_name: string;
+    language_code: string;
+  }>(res, "Could not start voice session");
+  return {
+    token: raw.token,
+    model: raw.model,
+    expiresAt: raw.expires_at,
+    sessionExpiresAt: raw.session_expires_at,
+    systemPrompt: raw.system_prompt,
+    voiceName: raw.voice_name,
+    languageCode: raw.language_code,
+  };
 }
 
 export async function downloadSubmissionFile(id: string, kind: "photo" | "lab", fileName: string, actor: ApiActor): Promise<File> {
