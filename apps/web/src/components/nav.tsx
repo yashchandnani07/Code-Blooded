@@ -293,6 +293,7 @@ export function Nav({ transparent = false }: { transparent?: boolean } = {}) {
               <Link href={toLocalePath("/patient/submissions")} className={navLink}>{t("submissions")}</Link>
               <Link href={toLocalePath("/patient/new")} className={navLink}>{t("newSubmission")}</Link>
               <Link href={toLocalePath("/patient/reports")} className={navLink}>{t("reports")}</Link>
+              <Link href={toLocalePath("/patient/qr")} className={navLink}>{t("myQrCode")}</Link>
               <LanguageDropdown />
             </>
           ) : (
@@ -300,6 +301,7 @@ export function Nav({ transparent = false }: { transparent?: boolean } = {}) {
               <Link href={toLocalePath("/dashboard")} className={navLink}>{t("docDashboard")}</Link>
               <Link href={toLocalePath("/cases")} className={navLink}>{t("cases")}</Link>
               <Link href={toLocalePath("/new-case")} className={navLink}>{t("newCase")}</Link>
+              <Link href={toLocalePath("/scan")} className={navLink}>{t("scanPatientCode")}</Link>
               <Link href={toLocalePath("/settings/profile")} className={navLink}>{t("docProfile")}</Link>
               <LanguageDropdown />
             </>

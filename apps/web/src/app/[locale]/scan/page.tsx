@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import { DashboardNav } from "@/components/nav";
 import { RoleGuard } from "@/components/lumina/role-guard";
 import { DoctorScanPanel } from "@/features/qr/doctor-scan-panel";
+import { PatientRecordView } from "@/features/qr/patient-record-view";
 
 export default function ScanPage() {
   const locale = useLocale();
@@ -25,17 +26,29 @@ export default function ScanPage() {
           </p>
 
           <div className="mt-10 space-y-6">
-            <DoctorScanPanel onGranted={setPatientId} />
+            {/* Suspense: the panel reads ?code= from the URL when a scan lands here. */}
+            <Suspense
+              fallback={
+                <div className="rounded border border-[#DDE3ED] bg-white p-6 text-[13.5px] text-[#8A94A6]">
+                  Loading…
+                </div>
+              }
+            >
+              <DoctorScanPanel onGranted={setPatientId} />
+            </Suspense>
 
             {patientId && (
               <section className="rounded border border-[#DDE3ED] bg-white p-6">
                 <h2 className="text-[18px] font-normal tracking-[-0.02em]">Patient record</h2>
                 <p className="mt-1.5 text-[13.5px] leading-6 text-[#4A5568]">
-                  Consent confirmed for patient <code className="text-[12.5px]">{patientId}</code>.
+                  Consent confirmed. Everything this patient has on file:
                 </p>
+                <div className="mt-5">
+                  <PatientRecordView patientId={patientId} />
+                </div>
                 <Link
                   href={`/${locale}/patient-queue`}
-                  className="mt-5 inline-flex h-10 items-center rounded bg-[#0D1B2A] px-6 text-[13.5px] text-white transition-colors hover:bg-[#1C3352]"
+                  className="mt-6 inline-flex h-10 items-center rounded bg-[#0D1B2A] px-6 text-[13.5px] text-white transition-colors hover:bg-[#1C3352]"
                 >
                   Open patient queue
                 </Link>
