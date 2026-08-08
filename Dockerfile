@@ -16,10 +16,7 @@ WORKDIR /app/apps/api
 
 RUN uv sync --no-dev
 
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
-
 EXPOSE 7860
 ENV PORT=7860
 
-CMD ["/app/start.sh"]
+CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860"]

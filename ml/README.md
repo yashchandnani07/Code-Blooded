@@ -96,7 +96,7 @@ with get_engine().connect() as c:
 ```
 
 ## Notes
-
+ 
 - `DATA_SOURCES.md` at the repo root says `ingest.pipeline`; the module is
   actually `ingest.run`. It also predates the Supabase migration, so ignore its
   references to `data/orpha.sqlite` — everything writes to `DATABASE_URL` now.
