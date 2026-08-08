@@ -11,13 +11,12 @@ WORKDIR /app
 
 COPY packages/ ./packages/
 COPY apps/api/ ./apps/api/
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
 
 WORKDIR /app/apps/api
 
 RUN uv sync --no-dev
-
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
 
 EXPOSE 7860
 ENV PORT=7860

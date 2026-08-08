@@ -20,6 +20,7 @@ from api.routes.agent import router as agent_router  # noqa: E402
 from api.routes.disease import router as disease_router  # noqa: E402
 from api.routes.fhir import router as fhir_router  # noqa: E402
 from api.routes.intake import router as intake_router  # noqa: E402
+from api.qr import router as qr_router  # noqa: E402
 from api.routes.patient_history import router as patient_history_router  # noqa: E402
 from api.routes.score import router as score_router  # noqa: E402
 from api.routes.search import router as search_router  # noqa: E402
@@ -163,6 +164,7 @@ app.include_router(search_router)
 app.include_router(submissions_router)
 app.include_router(patient_history_router)
 app.include_router(voice_router)
+app.include_router(qr_router)
 
 
 @app.get("/health")
